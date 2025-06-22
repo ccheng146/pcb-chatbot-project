@@ -353,20 +353,20 @@ app.post('/api/admin/login', (req, res) => {
 // Admin password change endpoint
 app.post('/api/admin/change-password', (req, res) => {
   const { currentPassword, newPassword } = req.body;
-  const admin = getAdminCredentials();
+  const adminCredentials = getAdminCredentials();
   
   if (!currentPassword || !newPassword) {
     return res.status(400).json({ success: false, message: 'Current and new passwords are required' });
   }
   
-  if (currentPassword !== admin.password) {
+  if (currentPassword !== adminCredentials.password) {
     return res.status(401).json({ success: false, message: 'Current password is incorrect' });
   }
   
   // Update password
-  admin.password = newPassword;
+  adminCredentials.password = newPassword;
   
-  if (saveAdminCredentials(admin)) {
+  if (saveAdminCredentials(adminCredentials)) {
     res.json({ success: true, message: 'Password changed successfully' });
   } else {
     res.status(500).json({ success: false, message: 'Failed to change password' });
