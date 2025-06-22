@@ -5,6 +5,8 @@ import multer from 'multer';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import cors from 'cors';
+import fs from 'fs';
+import path from 'path';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -12,6 +14,7 @@ dotenv.config();
 const app = express();
 // Enable CORS for all routes, useful for development and some deployment scenarios
 app.use(cors());
+app.use(express.json()); // Add express JSON middleware for parsing request bodies
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
@@ -220,6 +223,249 @@ app.post('/api/upload-training-data', upload.array('trainingFiles'), (req, res) 
     res.status(200).json({ message: 'Files uploaded successfully. Training has started.' });
 });
 
+// Define the path to the users.json file
+const usersFilePath = path.join(process.cwd(), 'users.json');
+
+// Helper function to read user data
+const readUserData = () => {
+  try {
+    if (fs.existsSync(usersFilePath)) {
+      const data = fs.readFileSync(usersFilePath, 'utf8');
+      return JSON.parse(data);
+    } else {
+      // If file doesn't exist yet, return empty array
+      return [];
+    }
+  } catch (error) {
+    console.error('Error reading users file:', error);
+    return [];
+  }
+};
+
+// Helper function to write user data
+const writeUserData = (data) => {
+  try {
+    fs.writeFileSync(usersFilePath, JSON.stringify(data, null, 2));
+    return true;
+  } catch (error) {
+    console.error('Error writing users file:', error);
+    return false;
+  }
+};
+
+// API endpoints for user management
+app.get('/api/users', (req, res) => {
+  const userData = readUserData();
+  
+  // Add online status information from our active connections
+  const usersWithStatus = userData.map(user => {
+    // Check if user is currently connected
+    const isOnline = Array.from(users.values()).some(u => 
+      u.username === user.username
+    );
+    
+    return {
+      ...user,
+      online: isOnline
+    };
+  });
+  
+  res.json(usersWithStatus);
+});
+
+app.delete('/api/users/:username', (req, res) => {
+  const { username } = req.params;
+  const userData = readUserData();
+  
+  const updatedUsers = userData.filter(user => user.username !== username);
+  
+  if (writeUserData(updatedUsers)) {
+    res.json({ success: true });
+  } else {
+    res.status(500).json({ success: false, message: 'Failed to delete user' });
+  }
+});
+
+// Define admin credentials file path
+const adminFilePath = path.join(process.cwd(), 'admin.json');
+
+// Initialize admin credentials if they don't exist
+const initializeAdminCredentials = () => {
+  try {
+    if (!fs.existsSync(adminFilePath)) {
+      const defaultAdmin = {
+        username: 'admin',
+        password: 'pcbadmin123'
+      };
+      fs.writeFileSync(adminFilePath, JSON.stringify(defaultAdmin, null, 2));
+      return defaultAdmin;
+    } else {
+      const data = fs.readFileSync(adminFilePath, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error('Error initializing admin credentials:', error);
+    return { username: 'admin', password: 'pcbadmin123' };
+  }
+};
+
+// Get admin credentials
+const getAdminCredentials = () => {
+  try {
+    if (fs.existsSync(adminFilePath)) {
+      const data = fs.readFileSync(adminFilePath, 'utf8');
+      return JSON.parse(data);
+    } else {
+      return initializeAdminCredentials();
+    }
+  } catch (error) {
+    console.error('Error reading admin credentials:', error);
+    return { username: 'admin', password: 'pcbadmin123' };
+  }
+};
+
+// Save admin credentials
+const saveAdminCredentials = (credentials) => {
+  try {
+    fs.writeFileSync(adminFilePath, JSON.stringify(credentials, null, 2));
+    return true;
+  } catch (error) {
+    console.error('Error saving admin credentials:', error);
+    return false;
+  }
+};
+
+// Initialize admin credentials on startup
+const adminCredentials = getAdminCredentials();
+
+// Authentication endpoint for admin
+app.post('/api/admin/login', (req, res) => {
+  const { username, password } = req.body;
+  const admin = getAdminCredentials();
+  
+  if (username === admin.username && password === admin.password) {
+    res.json({ success: true, message: 'Admin authentication successful' });
+  } else {
+    res.status(401).json({ success: false, message: 'Invalid credentials' });
+  }
+});
+
+// Admin password change endpoint
+app.post('/api/admin/change-password', (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const admin = getAdminCredentials();
+  
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ success: false, message: 'Current and new passwords are required' });
+  }
+  
+  if (currentPassword !== admin.password) {
+    return res.status(401).json({ success: false, message: 'Current password is incorrect' });
+  }
+  
+  // Update password
+  admin.password = newPassword;
+  
+  if (saveAdminCredentials(admin)) {
+    res.json({ success: true, message: 'Password changed successfully' });
+  } else {
+    res.status(500).json({ success: false, message: 'Failed to change password' });
+  }
+});
+
+// Authentication endpoint for regular users
+app.post('/api/auth/login', (req, res) => {
+  const { username, password } = req.body;
+  const userData = readUserData();
+  
+  const user = userData.find(u => u.username === username);
+  
+  if (user && user.password === password) {
+    res.json({ 
+      success: true, 
+      message: 'Authentication successful',
+      user: {
+        username: user.username,
+        language: user.language
+      }
+    });
+  } else {
+    res.status(401).json({ success: false, message: 'Invalid credentials' });
+  }
+});
+
+// User registration endpoint (for new users)
+app.post('/api/auth/register', (req, res) => {
+  const { username, password, language } = req.body;
+  
+  // Validate required fields
+  if (!username || !password) {
+    return res.status(400).json({ success: false, message: 'Username and password are required' });
+  }
+  
+  const userData = readUserData();
+  
+  // Check if username already exists
+  if (userData.some(u => u.username === username)) {
+    return res.status(409).json({ success: false, message: 'Username already exists' });
+  }
+  
+  // Add new user
+  const newUser = {
+    username,
+    password,
+    language: language || 'en',
+    lastLogin: new Date().toISOString(),
+    createdAt: new Date().toISOString()
+  };
+  
+  userData.push(newUser);
+  
+  if (writeUserData(userData)) {
+    res.json({ 
+      success: true, 
+      message: 'User registered successfully',
+      user: {
+        username: newUser.username,
+        language: newUser.language
+      }
+    });
+  } else {
+    res.status(500).json({ success: false, message: 'Failed to register user' });
+  }
+});
+
+// Fix the user password change endpoint (admin only)
+app.post('/api/users/:username/change-password', (req, res) => {
+  try {
+    const { username } = req.params;
+    const { newPassword } = req.body;
+    
+    if (!newPassword) {
+      return res.status(400).json({ success: false, message: 'New password is required' });
+    }
+    
+    const userData = readUserData();
+    const userIndex = userData.findIndex(u => u.username === username);
+    
+    if (userIndex === -1) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    
+    // Update user's password
+    userData[userIndex].password = newPassword;
+    
+    if (writeUserData(userData)) {
+      return res.json({ success: true, message: 'Password changed successfully' });
+    } else {
+      return res.status(500).json({ success: false, message: 'Failed to update password' });
+    }
+  } catch (error) {
+    console.error('Error in change-password endpoint:', error);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // --- WebSocket Server Logic ---
 wss.on('connection', (ws) => {
     console.log('New WebSocket connection established');
@@ -234,6 +480,32 @@ wss.on('connection', (ws) => {
                     users.set(ws, { username: data.username, language: data.language || 'en' });
                     broadcastUserList();
                     console.log(`${data.username} joined with language: ${data.language || 'en'}`);
+                    
+                    // Store user in the users.json file if they don't exist yet
+                    const userData = readUserData();
+                    const existingUserIndex = userData.findIndex(u => u.username === data.username);
+                    
+                    if (existingUserIndex >= 0) {
+                        // Update existing user's last login and language
+                        userData[existingUserIndex].lastLogin = new Date().toISOString();
+                        userData[existingUserIndex].language = data.language || 'en';
+                        
+                        // Store password if it doesn't exist or update it if provided
+                        if (data.password && (!userData[existingUserIndex].password || data.updatePassword)) {
+                            userData[existingUserIndex].password = data.password;
+                        }
+                    } else {
+                        // Add new user with password
+                        userData.push({
+                          username: data.username,
+                          password: data.password || '', // Store password if provided
+                          language: data.language || 'en',
+                          lastLogin: new Date().toISOString(),
+                          createdAt: new Date().toISOString()
+                        });
+                    }
+                    
+                    writeUserData(userData);
                     
                     // Send welcome message in user's language
                     const welcomeMessages = {
@@ -573,7 +845,12 @@ async function getGeminiResponse(prompt, language = 'en') {
     }
 }
 
-// Start the server
+// Add a simple test endpoint
+app.get('/api/test', (req, res) => {
+  res.json({ success: true, message: 'API is working properly' });
+});
+
+// Start the server - make sure this is at the end of the file
 server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });

@@ -1,3 +1,74 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Remove problematic viewport adjustments - keep it simple */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+/* Set base viewport height to prevent trimming */
+:root {
+  --app-height: 100%;
+}
+
+/* Apply safe viewing area for all screens */
+html, body {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  height: var(--app-height);
+}
+
+/* Prevent viewport trimming at root level */
+html {
+  overflow-y: auto !important;
+  height: 100% !important;
+  padding-top: 1px !important;
+}
+
+body {
+  margin-top: 1px !important;
+  height: calc(100% - 1px) !important;
+  overflow: hidden !important;
+}
+
+#root {
+  padding-top: 2px !important;
+  height: calc(100vh - 2px) !important;
+  overflow: hidden !important;
+}
+
+/* Ensure top content is never trimmed */
+#root {
+  padding-top: 1px;
+  height: calc(var(--app-height) - 1px);
+  overflow: hidden;
+}
+
+/* Prevent bottom content trimming */
+.chat-bottom-safe {
+  padding-bottom: env(safe-area-inset-bottom, 8px);
+  margin-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Ensure proper centering at root level */
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

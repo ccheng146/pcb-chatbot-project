@@ -1,0 +1,68 @@
+/* Specific styling for the unified layout */
+
+/* Tab navigation height */
+.tab-nav {
+  height: 48px;
+  min-height: 48px;
+  flex-shrink: 0;
+}
+
+/* Content area specific styling */
+.tab-content {
+  height: calc(100vh - 48px);
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+}
+
+/* Adjustments for ChatWindow component */
+.chat-window-container {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+/* Adjustments for LoginScreen component */
+.login-screen-container {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Adjustments for AdminPage component */
+.admin-page-container {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+/* Unified layout specific styling */
+
+/* Ensure all height calculations work properly */
+.chat-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fix for content trimming at top */
+.unified-tab-content {
+  height: calc(100vh - 48px);
+  padding-top: 1px; /* Small padding to prevent content trimming */
+}
+
+/* Ensure chat area gets proper height */
+.tab-chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Make internal scrolling work for chat messages */
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: 2px; /* Prevent top content trimming */
+}

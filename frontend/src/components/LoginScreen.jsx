@@ -2,15 +2,75 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { translate } from '../utils/translations';
+import { useNavigate } from 'react-router-dom';
 
 const LoginScreen = ({ onLogin }) => {
   const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { language, setLanguage } = useLanguage();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (name.trim()) {
-      onLogin({ name: name.trim(), language });
+    
+    if (!name.trim()) {
+      setError('Username is required');
+      return;
+    }
+    
+    if (!password.trim()) {
+      setError('Password is required');
+      return;
+    }
+    
+    setLoading(true);
+    setError('');
+
+    try {
+      if (isRegistering) {
+        // Register new user
+        const response = await fetch('http://localhost:8080/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username: name.trim(), password, language }),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Registration failed');
+        }
+        
+        // Successfully registered, now log them in
+        onLogin({ name: name.trim(), password, language });
+      } else {
+        // Login existing user
+        const response = await fetch('http://localhost:8080/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username: name.trim(), password }),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Authentication failed');
+        }
+        
+        // Successfully authenticated
+        onLogin({ name: name.trim(), password, language });
+      }
+    } catch (err) {
+      setError(err.message || 'Authentication error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -18,6 +78,12 @@ const LoginScreen = ({ onLogin }) => {
     setLanguage(e.target.value);
   };
 
+  // Add debugging for admin button
+  const goToAdmin = () => {
+    console.log('Navigating to admin page');
+    navigate('/admin');
+  };
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-blue-900 to-purple-900 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background decorative elements */}
@@ -42,6 +108,12 @@ const LoginScreen = ({ onLogin }) => {
             Professional PCB Solutions & AI Assistance
           </p>
         </div>
+        
+        {error && (
+          <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-4">
+            {error}
+          </div>
+        )}
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
@@ -87,20 +159,60 @@ const LoginScreen = ({ onLogin }) => {
               </svg>
             </div>
           </div>
+
+          {/* Password input */}
+          <div className="space-y-2">
+            <label className="block text-gray-700 text-sm font-semibold">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 pl-12 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 bg-gray-50/50"
+                placeholder="Enter your password"
+                required
+              />
+              <svg className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+              </svg>
+            </div>
+          </div>
           
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 outline-none shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+            disabled={loading}
+            className={`w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 outline-none shadow-lg hover:shadow-xl transform hover:scale-[1.02] ${
+              loading ? 'opacity-70 cursor-not-allowed' : ''
+            }`}
           >
-            {translate('joinChat', language)}
+            {loading ? 'Processing...' : isRegistering ? translate('register', language) : translate('joinChat', language)}
           </button>
+
+          <div className="text-center">
+            <button 
+              type="button" 
+              onClick={() => setIsRegistering(!isRegistering)}
+              className="text-blue-600 hover:text-blue-800 text-sm font-medium transition"
+            >
+              {isRegistering ? translate('loginPrompt', language) : translate('registerPrompt', language)}
+            </button>
+          </div>
         </form>
 
-        {/* Footer */}
-        <div className="mt-8 text-center">
+        {/* Footer - update the admin button */}
+        <div className="mt-8 text-center space-y-2">
           <p className="text-xs text-gray-500">
             Powered by AI • Secure • Professional
           </p>
+          <button
+            type="button"
+            onClick={goToAdmin}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          >
+            {translate('admin', language)}
+          </button>
         </div>
       </div>
     </div>
