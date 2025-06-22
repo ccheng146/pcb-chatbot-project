@@ -13,6 +13,14 @@ export const translations = {
     enterName: "Enter your name",
     selectLanguage: "Select Language",
     joinChat: "Join Chat",
+    register: "Register",
+    login: "Login",
+    password: "Password",
+    enterPassword: "Enter your password",
+    authError: "Authentication failed",
+    registerPrompt: "New user? Create an account",
+    loginPrompt: "Already have an account? Log in",
+    admin: "Admin",
     
     // Chat Window Headers
     appTitle: "PCB AI Assistant",
@@ -26,6 +34,7 @@ export const translations = {
     connecting: "Connecting...",
     connected: "Connected",
     disconnected: "Disconnected",
+    logout: "Logout",
     
     // Sidebar
     onlineUsers: "Online Users",
@@ -44,7 +53,10 @@ export const translations = {
     // Common
     loading: "Loading...",
     error: "Error",
-    retry: "Retry"
+    retry: "Retry",
+    chatRoom: "Chat Room",
+    pleaseLogin: "Please login to access the chat",
+    goToLogin: "Go to Login"
   },
   es: {
     // Login Screen
@@ -52,6 +64,14 @@ export const translations = {
     enterName: "Ingresa tu nombre",
     selectLanguage: "Seleccionar Idioma",
     joinChat: "Unirse al Chat",
+    register: "Registrarse",
+    login: "Iniciar sesión",
+    password: "Contraseña",
+    enterPassword: "Introduce tu contraseña",
+    authError: "Autenticación fallida",
+    registerPrompt: "¿Nuevo usuario? Crea una cuenta",
+    loginPrompt: "¿Ya tienes una cuenta? Inicia sesión",
+    admin: "Administrador",
     
     // Chat Window Headers
     appTitle: "Asistente IA PCB",
@@ -65,6 +85,7 @@ export const translations = {
     connecting: "Conectando...",
     connected: "Conectado",
     disconnected: "Desconectado",
+    logout: "Cerrar Sesión",
     
     // Sidebar
     onlineUsers: "Usuarios en Línea",
@@ -83,7 +104,10 @@ export const translations = {
     // Common
     loading: "Cargando...",
     error: "Error",
-    retry: "Reintentar"
+    retry: "Reintentar",
+    chatRoom: "Sala de Chat",
+    pleaseLogin: "Inicie sesión para acceder al chat",
+    goToLogin: "Ir a Inicio de Sesión"
   },
   zh: {
     // Login Screen
@@ -91,6 +115,14 @@ export const translations = {
     enterName: "请输入您的姓名",
     selectLanguage: "选择语言",
     joinChat: "加入聊天",
+    register: "注册",
+    login: "登录",
+    password: "密码",
+    enterPassword: "请输入密码",
+    authError: "认证失败",
+    registerPrompt: "新用户？创建账号",
+    loginPrompt: "已有账号？登录",
+    admin: "管理员",
     
     // Chat Window Headers
     appTitle: "PCB AI助手",
@@ -104,6 +136,7 @@ export const translations = {
     connecting: "连接中...",
     connected: "已连接",
     disconnected: "已断开连接",
+    logout: "退出登录",
     
     // Sidebar
     onlineUsers: "在线用户",
@@ -122,7 +155,10 @@ export const translations = {
     // Common
     loading: "加载中...",
     error: "错误",
-    retry: "重试"
+    retry: "重试",
+    chatRoom: "聊天室",
+    pleaseLogin: "请登录以访问聊天",
+    goToLogin: "前往登录"
   },
   de: {
     // Login Screen
@@ -130,6 +166,14 @@ export const translations = {
     enterName: "Geben Sie Ihren Namen ein",
     selectLanguage: "Sprache auswählen",
     joinChat: "Chat beitreten",
+    register: "Registrieren",
+    login: "Anmelden",
+    password: "Passwort",
+    enterPassword: "Passwort eingeben",
+    authError: "Authentifizierung fehlgeschlagen",
+    registerPrompt: "Neuer Benutzer? Konto erstellen",
+    loginPrompt: "Bereits ein Konto? Anmelden",
+    admin: "Administrator",
     
     // Chat Window Headers
     appTitle: "PCB KI-Assistent",
@@ -143,6 +187,7 @@ export const translations = {
     connecting: "Verbindung wird hergestellt...",
     connected: "Verbunden",
     disconnected: "Getrennt",
+    logout: "Abmelden",
     
     // Sidebar
     onlineUsers: "Online-Benutzer",
@@ -161,7 +206,10 @@ export const translations = {
     // Common
     loading: "Wird geladen...",
     error: "Fehler",
-    retry: "Wiederholen"
+    retry: "Wiederholen",
+    chatRoom: "Chatraum",
+    pleaseLogin: "Bitte loggen Sie sich ein, um den Chat zu nutzen",
+    goToLogin: "Zum Login"
   },
   th: {
     // Login Screen
@@ -169,6 +217,14 @@ export const translations = {
     enterName: "กรุณาใส่ชื่อของคุณ",
     selectLanguage: "เลือกภาษา",
     joinChat: "เข้าร่วมแชท",
+    register: "ลงทะเบียน",
+    login: "เข้าสู่ระบบ",
+    password: "รหัสผ่าน",
+    enterPassword: "ใส่รหัสผ่านของคุณ",
+    authError: "การยืนยันตัวตนล้มเหลว",
+    registerPrompt: "ผู้ใช้ใหม่? สร้างบัญชี",
+    loginPrompt: "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ",
+    admin: "ผู้ดูแลระบบ",
     
     // Chat Window Headers
     appTitle: "ผู้ช่วย PCB AI",
@@ -182,6 +238,7 @@ export const translations = {
     connecting: "กำลังเชื่อมต่อ...",
     connected: "เชื่อมต่อแล้ว",
     disconnected: "ยกเลิกการเชื่อมต่อ",
+    logout: "ออกจากระบบ",
     
     // Sidebar
     onlineUsers: "ผู้ใช้ออนไลน์",
@@ -200,7 +257,10 @@ export const translations = {
     // Common
     loading: "กำลังโหลด...",
     error: "ข้อผิดพลาด",
-    retry: "ลองใหม่"
+    retry: "ลองใหม่",
+    chatRoom: "ห้องแชท",
+    pleaseLogin: "กรุณาเข้าสู่ระบบเพื่อเข้าถึงแชท",
+    goToLogin: "ไปที่เข้าสู่ระบบ"
   }
 };
 

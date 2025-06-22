@@ -4,11 +4,14 @@ import Message from './Message';
 import useChat from '../hooks/useChat';
 import { useLanguage } from '../contexts/LanguageContext';
 import { translate } from '../utils/translations';
+import { useNavigate } from 'react-router-dom';
 
-const ChatWindow = ({ user }) => {
+const ChatWindow = ({ user, onLogout }) => {
   const [message, setMessage] = useState('');
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
   const { language } = useLanguage();
+  const navigate = useNavigate();
   
   const {
     messages,
@@ -19,6 +22,9 @@ const ChatWindow = ({ user }) => {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    
+    // Also prevent page scrolling
+    window.scrollTo(0, 0);
   };
 
   useEffect(() => {
@@ -43,13 +49,54 @@ const ChatWindow = ({ user }) => {
 
   const status = getConnectionStatus();
 
+  // Handle quick action buttons without page scrolling
+  const handleQuickAction = (questionType) => {
+    let question;
+    switch(questionType) {
+      case 'pcb':
+        question = language === 'zh' ? "什么是PCB？" : 
+                   language === 'es' ? "¿Qué es un PCB?" :
+                   language === 'de' ? "Was ist eine PCB?" :
+                   language === 'th' ? "PCB คืออะไร?" : 
+                   "What is a PCB?";
+        break;
+      case 'materials':
+        question = language === 'zh' ? "PCB材料" :
+                   language === 'es' ? "Materiales PCB" :
+                   language === 'de' ? "PCB Materialien" :
+                   language === 'th' ? "วัสดุ PCB" :
+                   "PCB materials";
+        break;
+      case 'types':
+        question = language === 'zh' ? "PCB类型" :
+                   language === 'es' ? "Tipos de PCB" :
+                   language === 'de' ? "PCB Typen" :
+                   language === 'th' ? "ประเภทของ PCB" :
+                   "Types of PCB";
+        break;
+    }
+    
+    setMessage(question);
+    
+    // Focus back to input if needed
+    const inputElement = document.getElementById('chatInput');
+    if (inputElement) {
+      inputElement.focus();
+    }
+    
+    // Make sure we're not scrolling the page
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  };
+
   return (
-    <div className="flex h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="flex h-screen overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50 chat-room-fix">
       <Sidebar users={users} />
       
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col h-full">
         {/* Enhanced Header with Translations */}
-        <div className="bg-white/90 backdrop-blur-sm border-b border-gray-200/50 px-6 py-4 shadow-sm">
+        <div className="bg-white/90 backdrop-blur-sm border-b border-gray-200/50 px-6 py-4 shadow-sm chat-header-visible">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -77,12 +124,25 @@ const ChatWindow = ({ user }) => {
                 </svg>
                 <span className="text-sm font-medium text-blue-700">{user.name}</span>
               </div>
+              <button
+                onClick={onLogout}
+                className="flex items-center space-x-1 px-3 py-1.5 bg-rose-50 text-rose-700 rounded-full hover:bg-rose-100 transition-colors"
+                title="Back to login"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span className="text-sm font-medium">Logout</span>
+              </button>
             </div>
           </div>
         </div>
 
         {/* Enhanced Messages Area with Translated Welcome */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-transparent to-blue-50/30">
+        <div 
+          className="flex-1 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-transparent to-blue-50/30 chat-messages"
+          ref={messagesContainerRef}
+        >
           {messages.length === 0 && (
             <div className="flex items-center justify-center h-full">
               <div className="text-center space-y-4">
@@ -105,7 +165,7 @@ const ChatWindow = ({ user }) => {
         </div>
 
         {/* Enhanced Input Area with Translated Quick Actions */}
-        <div className="bg-white/90 backdrop-blur-sm border-t border-gray-200/50 p-4 shadow-lg">
+        <div className="bg-white/90 backdrop-blur-sm border-t border-gray-200/50 p-4 shadow-lg chat-input">
           <form onSubmit={handleSubmit} className="flex space-x-4">
             <div className="flex-1 relative">
               <input
@@ -115,6 +175,7 @@ const ChatWindow = ({ user }) => {
                 placeholder={translate('typeMessage', language)}
                 className="w-full px-4 py-3 pl-12 pr-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 bg-gray-50/50"
                 disabled={!isConnected}
+                id="chatInput"
               />
               <svg className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
@@ -135,44 +196,38 @@ const ChatWindow = ({ user }) => {
           {/* Quick Actions with Translations */}
           <div className="flex space-x-2 mt-3">
             <button
-              onClick={() => {
-                let question = "What is a PCB?";
-                if (language === 'zh') question = "什么是PCB？";
-                else if (language === 'es') question = "¿Qué es un PCB?";
-                else if (language === 'de') question = "Was ist eine PCB?";
-                else if (language === 'th') question = "PCB คืออะไร?";
-                setMessage(question);
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleQuickAction('pcb');
               }}
               className="px-3 py-1.5 text-xs bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors"
               disabled={!isConnected}
+              type="button"
             >
               {translate('quickWhatIsPCB', language)}
             </button>
             <button
-              onClick={() => {
-                let question = "PCB materials";
-                if (language === 'zh') question = "PCB材料";
-                else if (language === 'es') question = "Materiales PCB";
-                else if (language === 'de') question = "PCB Materialien";
-                else if (language === 'th') question = "วัสดุ PCB";
-                setMessage(question);
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleQuickAction('materials');
               }}
               className="px-3 py-1.5 text-xs bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition-colors"
               disabled={!isConnected}
+              type="button"
             >
               {translate('quickMaterials', language)}
             </button>
             <button
-              onClick={() => {
-                let question = "Types of PCB";
-                if (language === 'zh') question = "PCB类型";
-                else if (language === 'es') question = "Tipos de PCB";
-                else if (language === 'de') question = "PCB Typen";
-                else if (language === 'th') question = "ประเภทของ PCB";
-                setMessage(question);
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleQuickAction('types');
               }}
               className="px-3 py-1.5 text-xs bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200 transition-colors"
               disabled={!isConnected}
+              type="button"
             >
               {translate('quickTypes', language)}
             </button>

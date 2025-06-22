@@ -117,3 +117,521 @@ button {
 .read-the-docs {
   color: #888;
 }
+
+/* Add height constraint for unified layout */
+.unified-layout-height {
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+/* Chat container specific adjustments */
+.chat-container-unified {
+  max-height: calc(100vh - 49px); /* 49px is the tab height */
+}
+
+/* Global scrolling prevention */
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Make internal components use their own scrolling when needed */
+.scroll-content {
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Fix for the chat header trimming */
+.prevent-trim {
+  padding-top: 1px;
+  margin-top: -1px;
+}
+
+.no-scroll-focus:focus {
+  scroll-behavior: auto !important;
+}
+
+/* Prevent auto-scrolling behavior */
+.chat-bottom-container {
+  position: relative;
+  scroll-behavior: auto !important;
+}
+
+.chat-bottom-container button {
+  scroll-behavior: auto !important;
+}
+
+.chat-input {
+  scroll-behavior: auto !important;
+  scroll-margin: 0 !important;
+}
+
+/* Ensure chat message container properly handles scrolling */
+.chat-messages-container {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: thin;   /* Firefox */
+  overflow-y: auto;        /* Standard property */
+  scroll-behavior: smooth;
+  height: 100%;
+  max-height: 100%;
+  overscroll-behavior: contain;
+}
+
+.chat-messages-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-messages-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-messages-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+/* Prevent scroll propagation */
+.scroll-lock {
+  overscroll-behavior: contain;
+  overflow: hidden;
+}
+
+/* Fix for bottom trimming in chat container */
+.chat-full-height {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-container-wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Ensure input area is always visible */
+.chat-input-container {
+  position: relative;
+  z-index: 10;
+  padding-bottom: env(safe-area-inset-bottom, 8px);
+  margin-bottom: 0;
+}
+
+/* Fix for inverted chat layout */
+.chat-window-wrapper {
+  display: flex !important;
+  flex-direction: row !important;
+  height: 100vh !important;
+}
+
+.chat-container-fix {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+}
+
+.chat-header-fix {
+  order: 1 !important;
+  flex-shrink: 0 !important;
+}
+
+.chat-messages {
+  order: 2 !important;
+  flex: 1 !important;
+  overflow-y: auto !important;
+}
+
+.chat-input {
+  order: 3 !important;
+  flex-shrink: 0 !important;
+}
+
+/* Fix for top content trimming */
+.flex.h-screen {
+  height: calc(100vh - 2px); /* Slightly reduce height to prevent overflow */
+  padding-top: 2px; /* Add small padding at top to prevent trimming */
+}
+
+/* Ensure header is fully visible */
+.bg-white\/90.backdrop-blur-sm {
+  margin-top: 2px;
+}
+
+/* Fix for top content trimming in chat view */
+.chat-container-fix {
+  padding-top: 5px !important;
+  margin-top: 0 !important;
+  overflow: visible !important;
+}
+
+.chat-header-fix {
+  margin-top: 0 !important;
+  padding-top: 10px !important;
+  min-height: 65px !important;
+  overflow: visible !important;
+  z-index: 10;
+}
+
+/* Adjust overall container to prevent trimming */
+.chat-window-wrapper {
+  height: calc(100vh - 5px) !important;
+  padding-top: 5px !important;
+  overflow: hidden;
+}
+
+/* Fix for top content trimming in chatroom */
+.chat-room-fix {
+  padding-top: 4px !important;
+  min-height: calc(100vh - 4px) !important;
+}
+
+.chat-header-visible {
+  margin-top: 2px !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* More effective fix for top trimming - override any conflicting styles */
+.flex.h-screen.overflow-hidden {
+  height: calc(100vh - 1px) !important;
+  margin-top: 1px !important;
+  box-sizing: border-box !important;
+}
+
+/* Ensure the chat container doesn't get cut off */
+.chat-window-wrapper,
+.flex.h-screen.overflow-hidden.bg-gradient-to-br {
+  padding-top: 3px !important;
+  height: calc(100vh - 3px) !important;
+}
+
+/* Force header visibility */
+.bg-white\/90.backdrop-blur-sm.border-b {
+  margin-top: 0 !important;
+  padding-top: 8px !important;
+  min-height: 70px !important;
+  position: relative !important;
+  top: 0 !important;
+}
+
+/* Remove all previous trimming fixes and apply simple solution */
+.chat-no-trim {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  height: 100vh !important;
+  position: relative !important;
+  top: 0 !important;
+}
+
+/* Center alignment fix for login and chatroom pages */
+.App {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  min-height: 100vh !important;
+}
+
+/* Ensure chat window is centered */
+.chat-no-trim {
+  margin: 0 auto !important;
+  max-width: 100vw !important;
+  width: 100% !important;
+}
+
+/* Center login screen */
+.min-h-screen {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Fix admin page button alignment */
+.flex.items-center.space-x-3 {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+/* Fix admin header position - force it to top */
+.min-h-screen.bg-gray-50 {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+}
+
+.bg-white.shadow-lg {
+  width: 100% !important;
+  order: 1 !important;
+  flex-shrink: 0 !important;
+}
+
+/* Direct fix for admin header position */
+.min-h-screen.bg-gray-50 > .bg-white.shadow-lg {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 1000 !important;
+}
+
+.min-h-screen.bg-gray-50 > .max-w-7xl {
+  margin-top: 64px !important;
+  padding-top: 32px !important;
+}
+
+/* Ensure admin content flows vertically */
+.max-w-7xl.mx-auto {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Fix admin page layout order */
+.admin-page-container {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.admin-header {
+  flex-shrink: 0 !important;
+  height: 64px !important;
+  padding: 16px 0;
+  margin-bottom: 8px;
+  border-bottom: none !important;
+  width: 100%;
+}
+
+.admin-content {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.user-management-container {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  margin: 16px !important;
+}
+
+.user-management-header {
+  flex-shrink: 0 !important;
+  padding: 16px;
+  background-color: white;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 4px;
+  padding-top: 16px;
+  width: 100%;
+  margin-bottom: 0;
+  z-index: 20;
+}
+
+.user-records-container {
+  height: calc(100vh - 160px);
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.user-records-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.user-records-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f9fafb; /* Light gray background for headers */
+  z-index: 10;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1); /* Subtle shadow for separation */
+}
+
+.user-records-table-container {
+  height: calc(100vh - 180px);
+  overflow-y: auto !important;
+  overflow-x: hidden;
+}
+
+/* Force scrollbar to be visible */
+.user-records-table-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.user-records-table-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.user-records-table-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.user-records-table-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Center login and chatroom pages on light blue background */
+.App {
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Center login screen */
+.App > div {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Center chat window when displayed */
+.flex.h-screen.overflow-hidden.bg-gradient-to-br {
+  margin: 0 auto !important;
+  width: 100% !important;
+  height: 100vh !important;
+}
+
+/* Align sidebar to top of chatroom page */
+.w-80.bg-white\/95.backdrop-blur-sm.border-r {
+  align-self: flex-start !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  height: 100vh !important;
+  position: relative !important;
+  top: 0 !important;
+}
+
+/* Align User Management close to admin header */
+.max-w-7xl.mx-auto.px-4.sm\:px-6.lg\:px-8.py-8 {
+  padding-top: 8px !important;
+  margin-top: 0 !important;
+}
+
+.bg-white.shadow-lg.rounded-lg.overflow-hidden {
+  margin-top: -8px !important;
+}
+
+/* Override existing py-8 padding */
+.py-8 {
+  padding-top: 0 !important;
+  padding-bottom: 32px !important;
+}
+
+/* Admin page layout fixes */
+.admin-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: white;
+}
+
+.admin-sticky-banner {
+  position: sticky;
+  top: 64px; /* Height of the admin header */
+  z-index: 9;
+  background-color: white;
+}
+
+.admin-scrollable-content {
+  overflow-y: auto;
+  max-height: calc(100vh - 130px); /* Adjust based on header heights */
+}
+
+.min-h-screen.bg-gray-50.flex.flex-col.h-screen {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.flex-1.overflow-auto {
+  overflow-y: auto !important;
+  max-height: calc(100vh - 120px) !important; /* Adjust based on header heights */
+  flex: 1 !important;
+}
+
+.bg-white.shadow-lg.flex-shrink-0 {
+  flex-shrink: 0 !important;
+}
+
+/* Ensure table header stays fixed when scrolling */
+thead.bg-gray-50.sticky.top-0 {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1 !important;
+}
+
+/* Force correct admin layout */
+.min-h-screen.bg-gray-50.flex.flex-col > * {
+  display: block;
+  width: 100%;
+}
+
+.min-h-screen.bg-gray-50.flex.flex-col > div:nth-child(1) {
+  order: 1;
+}
+
+.min-h-screen.bg-gray-50.flex.flex-col > div:nth-child(2) {
+  order: 2;
+}
+
+.min-h-screen.bg-gray-50.flex.flex-col > div:nth-child(3) {
+  order: 3;
+  overflow: auto;
+}
+
+/* Fixed table header styles */
+.table-container {
+  position: relative;
+  width: 100%;
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.scrollable-body {
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Ensure both tables have identical column widths */
+.table-container table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollable-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-body::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+.scrollable-body::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1;
+  border-radius: 4px;
+}
+
