@@ -3,7 +3,7 @@
     "username": "dennis",
     "password": "tjd23e65",
     "language": "en",
-    "lastLogin": "2025-06-22T16:23:09.909Z",
+    "lastLogin": "2025-06-22T16:40:28.612Z",
     "createdAt": "2025-06-22T11:18:44.774Z"
   },
   {
@@ -82,5 +82,12 @@
     "language": "en",
     "lastLogin": "2025-06-22T16:29:10.586Z",
     "createdAt": "2025-06-22T16:29:10.586Z"
+  },
+  {
+    "username": "Horace",
+    "password": "happy123",
+    "language": "en",
+    "lastLogin": "2025-06-22T16:46:39.506Z",
+    "createdAt": "2025-06-22T16:46:39.506Z"
   }
 ]

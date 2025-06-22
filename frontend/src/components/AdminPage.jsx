@@ -474,17 +474,22 @@ const AdminPage = () => {
   // Main authenticated UI rendering
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Admin Header */}
-      <div className="bg-white shadow-lg">
+      {/* PCB Admin Panel Header */}
+      <div className="admin-header">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-red-600 to-orange-600 rounded-lg flex items-center justify-center shadow-md mr-3">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                </svg>
+              </div>
               <h1 className="text-xl font-bold text-gray-900">PCB Admin Panel</h1>
             </div>
             <div className="flex items-center">
               <button
                 onClick={handleLogout}
-                className="ml-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
               >
                 Logout
               </button>
@@ -493,10 +498,10 @@ const AdminPage = () => {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-          <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-gray-50">
+      {/* User Management Header */}
+      <div className="user-management-header">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-between items-center">
             <h2 className="text-lg font-medium text-gray-900">User Management</h2>
             <button 
               onClick={() => setIsAddingUser(true)}
@@ -508,108 +513,103 @@ const AdminPage = () => {
               Add User
             </button>
           </div>
+        </div>
+      </div>
 
-          {/* User table */}
-          {loading ? (
-            <div className="px-6 py-4 text-center">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
-              <p className="mt-2 text-gray-600">Loading users...</p>
-            </div>
-          ) : error ? (
-            <div className="px-6 py-4">
-              <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg">
-                {error}
-                <button
-                  onClick={fetchUsers}
-                  className="ml-2 text-blue-600 hover:text-blue-800"
-                >
-                  Retry
-                </button>
+      {/* User Records Container with Scrollbar */}
+      <div className="user-records-container">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+            {loading ? (
+              <div className="px-6 py-4 text-center">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
+                <p className="mt-2 text-gray-600">Loading users...</p>
               </div>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                {/* Table header */}
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Username
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Language
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Last Login
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {/* User rows */}
-                  {users.length === 0 ? (
+            ) : error ? (
+              <div className="px-6 py-4">
+                <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg">
+                  {error}
+                  <button
+                    onClick={fetchUsers}
+                    className="ml-2 text-blue-600 hover:text-blue-800"
+                  >
+                    Retry
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="user-records-table-container">
+                <table className="user-records-table">
+                  <thead className="bg-gray-50">
                     <tr>
-                      <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                        No users found
-                      </td>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Language</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Login</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
-                  ) : (
-                    users.map((user, index) => (
-                      <tr key={index} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{user.username}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                            {user.language || 'en'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {user.online ? (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                              Online
-                            </span>
-                          ) : (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                              Offline
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button 
-                            className="text-blue-600 hover:text-blue-900 mr-4"
-                            onClick={() => alert(`View details for ${user.username}`)}
-                          >
-                            View
-                          </button>
-                          <button 
-                            className="text-purple-600 hover:text-purple-900 mr-4"
-                            onClick={() => openPasswordChangeModal(user)}
-                          >
-                            Change Password
-                          </button>
-                          <button 
-                            className="text-red-600 hover:text-red-900"
-                            onClick={() => handleDeleteUser(user.username)}
-                          >
-                            Delete
-                          </button>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {/* User rows */}
+                    {users.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                          No users found
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
+                    ) : (
+                      users.map((user, index) => (
+                        <tr key={index} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">{user.username}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                              {user.language || 'en'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {user.online ? (
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Online
+                              </span>
+                            ) : (
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                Offline
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button 
+                              className="text-blue-600 hover:text-blue-900 mr-4"
+                              onClick={() => alert(`View details for ${user.username}`)}
+                            >
+                              View
+                            </button>
+                            <button 
+                              className="text-purple-600 hover:text-purple-900 mr-4"
+                              onClick={() => openPasswordChangeModal(user)}
+                            >
+                              Change Password
+                            </button>
+                            <button 
+                              className="text-red-600 hover:text-red-900"
+                              onClick={() => handleDeleteUser(user.username)}
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       
