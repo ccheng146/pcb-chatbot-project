@@ -635,3 +635,104 @@ thead.bg-gray-50.sticky.top-0 {
   border-radius: 4px;
 }
 
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+  /* Fix for mobile layout */
+  #root {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  
+  /* Adjust chat container for mobile */
+  .chat-container-wrapper {
+    padding-bottom: env(safe-area-inset-bottom, 0) !important;
+  }
+  
+  /* Adjust chat window */
+  .chat-window-wrapper {
+    flex-direction: column !important;
+  }
+  
+  /* Hide sidebar on mobile or make it togglable */
+  .w-80.bg-white\/95.backdrop-blur-sm.border-r {
+    display: none !important; /* Default hidden on mobile */
+  }
+  
+  /* Show sidebar when active class is present */
+  .w-80.bg-white\/95.backdrop-blur-sm.border-r.mobile-sidebar-active {
+    display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100% !important;
+    width: 80% !important;
+    max-width: 300px !important;
+    z-index: 50 !important;
+  }
+  
+  /* Admin panel adjustments */
+  .admin-header {
+    padding: 8px 0 !important;
+  }
+  
+  .user-management-header {
+    padding: 8px !important;
+  }
+  
+  /* Responsive table adjustments */
+  .scrollable-body {
+    max-height: calc(100vh - 180px) !important;
+  }
+  
+  /* Adjust admin buttons on small screens */
+  .admin-header .flex.items-center.space-x-3 {
+    gap: 6px !important;
+  }
+  
+  .admin-header button {
+    font-size: 0.75rem !important;
+    padding: 6px 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra small screens */
+  .messages-container {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  /* Make chat messages more readable on small screens */
+  .max-w-md.lg\:max-w-lg {
+    max-width: 90% !important;
+  }
+  
+  /* Adjust login container on very small screens */
+  .login-screen-container > div {
+    width: 90% !important;
+    padding: 16px !important;
+  }
+}
+
+/* Fix layout for iPhone notch */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .chat-input-container, .login-screen-container form {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+}
+
+/* Mobile orientation fixes */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .min-h-screen {
+    min-height: 100% !important;
+  }
+  
+  /* Fix for login screen on landscape orientation */
+  .login-screen-container {
+    align-items: flex-start !important;
+    padding-top: 16px !important;
+  }
+}
+

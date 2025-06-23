@@ -5,6 +5,10 @@
   height: 48px;
   min-height: 48px;
   flex-shrink: 0;
+  overflow-x: auto; /* Allow scrolling on small devices */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  white-space: nowrap; /* Prevent tab wrapping */
+  display: flex;
 }
 
 /* Content area specific styling */
@@ -65,4 +69,26 @@
   flex: 1;
   overflow-y: auto;
   padding-top: 2px; /* Prevent top content trimming */
+}
+
+/* Responsive design for different screen sizes */
+@media (max-width: 768px) {
+  .tab-nav button {
+    padding-left: 3vw !important;
+    padding-right: 3vw !important;
+    font-size: 0.85rem !important;
+  }
+  
+  /* Adjust content area on mobile */
+  .tab-content {
+    height: calc(100vh - 48px - env(safe-area-inset-bottom, 0px));
+    max-height: calc(100vh - 48px - env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Account for notch on iPhone X and newer models */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .chat-input, .login-form-container {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
 }

@@ -33,6 +33,8 @@ body {
   margin-top: 1px !important;
   height: calc(100% - 1px) !important;
   overflow: hidden !important;
+  -webkit-text-size-adjust: 100%; /* Prevent iOS text size adjust on orientation change */
+  touch-action: manipulation; /* Prevent double-tap to zoom */
 }
 
 #root {
@@ -71,4 +73,17 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* Responsive adjustments for different device sizes */
+@media (max-width: 640px) {
+  html, body, #root {
+    height: -webkit-fill-available; /* Fix for iOS Safari */
+  }
+  
+  #root {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 !important;
+  }
 }
