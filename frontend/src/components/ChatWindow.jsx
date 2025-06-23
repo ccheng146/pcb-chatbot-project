@@ -17,6 +17,7 @@ const ChatWindow = ({ user, onLogout }) => {
     messages,
     users,
     isConnected,
+    connectionError, // New error state from hook
     sendMessage
   } = useChat(user);
 
@@ -40,7 +41,9 @@ const ChatWindow = ({ user, onLogout }) => {
   };
 
   const getConnectionStatus = () => {
-    if (isConnected) {
+    if (connectionError) {
+      return { text: connectionError, color: 'text-red-600', bgColor: 'bg-red-500', icon: '✕' };
+    } else if (isConnected) {
       return { text: translate('connected', language), color: 'text-emerald-600', bgColor: 'bg-emerald-500', icon: '●' };
     } else {
       return { text: translate('connecting', language), color: 'text-amber-600', bgColor: 'bg-amber-500', icon: '●' };
@@ -113,7 +116,7 @@ const ChatWindow = ({ user, onLogout }) => {
             </div>
             <div className="flex items-center space-x-3">
               <div className="flex items-center space-x-2 px-3 py-1.5 bg-gray-100 rounded-full">
-                <div className={`w-2 h-2 rounded-full ${status.bgColor} animate-pulse`}></div>
+                <div className={`w-2 h-2 rounded-full ${status.bgColor} ${connectionError ? '' : 'animate-pulse'}`}></div>
                 <span className={`text-sm font-medium ${status.color}`}>
                   {status.text}
                 </span>
@@ -158,6 +161,25 @@ const ChatWindow = ({ user, onLogout }) => {
               </div>
             </div>
           )}
+          {connectionError && messages.length === 0 && (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center bg-red-50 p-6 rounded-lg shadow border border-red-200 max-w-md">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-red-700 mb-2">Connection Error</h3>
+                <p className="text-red-600 mb-4">{connectionError}</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                >
+                  Refresh Page
+                </button>
+              </div>
+            </div>
+          )}
           {messages.map((msg) => (
             <Message key={msg.id} message={msg} currentUser={user.name} />
           ))}
@@ -183,7 +205,7 @@ const ChatWindow = ({ user, onLogout }) => {
             </div>
             <button
               type="submit"
-              disabled={!isConnected || !message.trim()}
+              disabled={!isConnected || !message.trim() || !!connectionError}
               className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2"
             >
               <span className="font-medium">{translate('send', language)}</span>

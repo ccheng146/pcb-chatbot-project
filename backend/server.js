@@ -13,7 +13,13 @@ dotenv.config();
 
 const app = express();
 // Enable CORS for all routes, useful for development and some deployment scenarios
-app.use(cors());
+app.use(cors({
+  origin: '*', // In production, restrict this to your frontend domain
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 200
+}));
 app.use(express.json()); // Add express JSON middleware for parsing request bodies
 
 const server = http.createServer(app);
@@ -375,22 +381,51 @@ app.post('/api/admin/change-password', (req, res) => {
 
 // Authentication endpoint for regular users
 app.post('/api/auth/login', (req, res) => {
-  const { username, password } = req.body;
-  const userData = readUserData();
-  
-  const user = userData.find(u => u.username === username);
-  
-  if (user && user.password === password) {
-    res.json({ 
-      success: true, 
-      message: 'Authentication successful',
-      user: {
-        username: user.username,
-        language: user.language
-      }
+  try {
+    const { username, password } = req.body;
+    
+    if (!username || !password) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Username and password are required' 
+      });
+    }
+    
+    const userData = readUserData();
+    
+    if (!userData || userData.length === 0) {
+      console.warn('Warning: No users found in database');
+      return res.status(500).json({ 
+        success: false, 
+        message: 'User database is empty or not accessible' 
+      });
+    }
+    
+    const user = userData.find(u => u.username === username);
+    
+    if (user && user.password === password) {
+      // Update last login time
+      user.lastLogin = new Date().toISOString();
+      writeUserData(userData);
+      
+      res.json({ 
+        success: true, 
+        message: 'Authentication successful',
+        user: {
+          username: user.username,
+          language: user.language
+        }
+      });
+    } else {
+      res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error during authentication',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
-  } else {
-    res.status(401).json({ success: false, message: 'Invalid credentials' });
   }
 });
 
@@ -847,7 +882,12 @@ async function getGeminiResponse(prompt, language = 'en') {
 
 // Add a simple test endpoint
 app.get('/api/test', (req, res) => {
-  res.json({ success: true, message: 'API is working properly' });
+  res.json({ 
+    success: true, 
+    message: 'API is working properly',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0'
+  });
 });
 
 // Start the server - make sure this is at the end of the file
