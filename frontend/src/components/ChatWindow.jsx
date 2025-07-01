@@ -94,7 +94,7 @@ const ChatWindow = ({ user, onLogout }) => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50 chat-room-fix">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 to-blue-50 chat-room-fix">
       <Sidebar users={users} />
       
       <div className="flex-1 flex flex-col h-full">
