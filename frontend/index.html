@@ -2,8 +2,20 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>PCB Industry Chatbot</title>
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#3B82F6">
+    <title>PCB Chatbot</title>
+    <style>
+      /* Critical CSS to prevent FOUC on mobile */
+      html, body { 
+        height: 100vh; 
+        height: -webkit-fill-available; 
+        overflow: hidden; 
+      }
+    </style>
   </head>
   <body>
     <!-- Your entire React application will be rendered inside this div -->

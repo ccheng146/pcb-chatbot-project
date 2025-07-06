@@ -2,88 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Remove problematic viewport adjustments - keep it simple */
-html, body, #root {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-/* Set base viewport height to prevent trimming */
-:root {
-  --app-height: 100%;
-}
-
-/* Apply safe viewing area for all screens */
-html, body {
-  padding: 0;
-  margin: 0;
-  overflow: hidden;
-  height: var(--app-height);
-}
-
-/* Prevent viewport trimming at root level */
 html {
-  overflow-y: auto !important;
-  height: 100% !important;
-  padding-top: 1px !important;
+  height: 100%;
+  height: -webkit-fill-available;
 }
 
 body {
-  margin-top: 1px !important;
-  height: calc(100% - 1px) !important;
-  overflow: hidden !important;
-  -webkit-text-size-adjust: 100%; /* Prevent iOS text size adjust on orientation change */
-  touch-action: manipulation; /* Prevent double-tap to zoom */
+  height: 100%;
+  height: -webkit-fill-available;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+  /* Prevent iOS bounce */
+  overscroll-behavior: none;
+  position: fixed;
+  width: 100%;
 }
 
 #root {
-  padding-top: 2px !important;
-  height: calc(100vh - 2px) !important;
-  overflow: hidden !important;
-}
-
-/* Ensure top content is never trimmed */
-#root {
-  padding-top: 1px;
-  height: calc(var(--app-height) - 1px);
+  height: 100%;
+  height: -webkit-fill-available;
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for modern browsers */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   overflow: hidden;
 }
 
-/* Prevent bottom content trimming */
-.chat-bottom-safe {
-  padding-bottom: env(safe-area-inset-bottom, 8px);
-  margin-bottom: env(safe-area-inset-bottom, 0);
-}
-
-/* Ensure proper centering at root level */
-html, body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#root {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Responsive adjustments for different device sizes */
-@media (max-width: 640px) {
-  html, body, #root {
-    height: -webkit-fill-available; /* Fix for iOS Safari */
-  }
-  
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
   #root {
-    width: 100%;
-    max-width: 100%;
-    padding: 0 !important;
+    height: -webkit-fill-available;
   }
+}
+
+/* Prevent zoom on input focus */
+input[type="text"],
+input[type="password"],
+select,
+textarea {
+  font-size: 16px; /* Prevents zoom on iOS */
 }

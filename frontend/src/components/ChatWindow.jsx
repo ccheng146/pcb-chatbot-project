@@ -4,39 +4,62 @@ import Message from './Message';
 import useChat from '../hooks/useChat';
 import { useLanguage } from '../contexts/LanguageContext';
 import { translate } from '../utils/translations';
-import { useNavigate } from 'react-router-dom';
 
-const ChatWindow = ({ user, onLogout }) => {
+const ChatWindow = ({ user, onLogout, isMobile }) => {
   const [message, setMessage] = useState('');
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const { language } = useLanguage();
-  const navigate = useNavigate();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   const {
     messages,
     users,
     isConnected,
-    connectionError, // New error state from hook
+    connectionError,
     sendMessage
   } = useChat(user);
 
+  // Improved scroll to bottom function
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    
-    // Also prevent page scrolling
-    window.scrollTo(0, 0);
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   };
 
+  // Scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
+  // Prevent page scrolling when component mounts
+  useEffect(() => {
+    // Disable body scroll when chat is active
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    
+    return () => {
+      // Re-enable body scroll when component unmounts
+      document.body.style.overflow = 'unset';
+      document.documentElement.style.overflow = 'unset';
+    };
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    e.stopPropagation();
+    
     if (message.trim() && isConnected) {
       sendMessage(message);
       setMessage('');
+    }
+    
+    // Ensure the input stays focused and page doesn't scroll
+    const inputElement = document.getElementById('chatInput');
+    if (inputElement) {
+      setTimeout(() => {
+        inputElement.focus();
+      }, 0);
     }
   };
 
@@ -81,25 +104,35 @@ const ChatWindow = ({ user, onLogout }) => {
     
     setMessage(question);
     
-    // Focus back to input if needed
+    // Focus the input without scrolling
     const inputElement = document.getElementById('chatInput');
     if (inputElement) {
       inputElement.focus();
-    }
-    
-    // Make sure we're not scrolling the page
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      inputElement.scrollIntoView({ behavior: 'instant', block: 'nearest' });
     }
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-slate-50 to-blue-50 chat-room-fix">
-      <Sidebar users={users} />
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 to-blue-50 overflow-hidden">
+      {/* Mobile sidebar toggle */}
+      {isMobile && (
+        <button
+          className="absolute top-4 left-4 z-50 md:hidden"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        >
+          <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      )}
+
+      {/* Sidebar */}
+      <Sidebar users={users} isSidebarOpen={isSidebarOpen} />
       
-      <div className="flex-1 flex flex-col h-full">
-        {/* Enhanced Header with Translations */}
-        <div className="bg-white/90 backdrop-blur-sm border-b border-gray-200/50 px-6 py-4 shadow-sm chat-header-visible">
+      {/* Main chat area */}
+      <div className="flex flex-col flex-1 h-full overflow-hidden">
+        {/* Enhanced Header */}
+        <div className="bg-white/90 backdrop-blur-sm border-b border-gray-200/50 px-6 py-4 shadow-sm flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -141,12 +174,16 @@ const ChatWindow = ({ user, onLogout }) => {
           </div>
         </div>
 
-        {/* Enhanced Messages Area with Translated Welcome */}
+        {/* Messages Area - with proper overflow handling */}
         <div 
-          className="flex-1 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-transparent to-blue-50/30 chat-messages"
+          className="flex-1 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-transparent to-blue-50/30"
           ref={messagesContainerRef}
+          style={{
+            height: 'calc(100vh - 200px)', // Adjust based on header and input heights
+            scrollBehavior: 'smooth'
+          }}
         >
-          {messages.length === 0 && (
+          {messages.length === 0 && !connectionError && (
             <div className="flex items-center justify-center h-full">
               <div className="text-center space-y-4">
                 <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
@@ -161,6 +198,7 @@ const ChatWindow = ({ user, onLogout }) => {
               </div>
             </div>
           )}
+          
           {connectionError && messages.length === 0 && (
             <div className="flex items-center justify-center h-full">
               <div className="text-center bg-red-50 p-6 rounded-lg shadow border border-red-200 max-w-md">
@@ -180,14 +218,15 @@ const ChatWindow = ({ user, onLogout }) => {
               </div>
             </div>
           )}
+          
           {messages.map((msg) => (
             <Message key={msg.id} message={msg} currentUser={user.name} />
           ))}
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Enhanced Input Area with Translated Quick Actions */}
-        <div className="bg-white/90 backdrop-blur-sm border-t border-gray-200/50 p-4 shadow-lg chat-input">
+        {/* Input Area - fixed at bottom */}
+        <div className="bg-white/90 backdrop-blur-sm border-t border-gray-200/50 p-4 shadow-lg flex-shrink-0">
           <form onSubmit={handleSubmit} className="flex space-x-4">
             <div className="flex-1 relative">
               <input
@@ -198,6 +237,7 @@ const ChatWindow = ({ user, onLogout }) => {
                 className="w-full px-4 py-3 pl-12 pr-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 bg-gray-50/50"
                 disabled={!isConnected}
                 id="chatInput"
+                autoComplete="off"
               />
               <svg className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
@@ -215,7 +255,7 @@ const ChatWindow = ({ user, onLogout }) => {
             </button>
           </form>
           
-          {/* Quick Actions with Translations */}
+          {/* Quick Actions */}
           <div className="flex space-x-2 mt-3">
             <button
               onClick={(e) => {
