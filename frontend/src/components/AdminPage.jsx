@@ -142,7 +142,7 @@ const AdminPage = () => {
   const handleLogout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem('adminAuthenticated');
-    navigate('/');
+    navigate('/');  // This will now work properly
   };
 
   const handleDeleteUser = async (username) => {

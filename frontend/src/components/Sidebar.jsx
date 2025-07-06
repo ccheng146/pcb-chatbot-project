@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { translate, nativeLanguageNames } from '../utils/translations';
 
-const Sidebar = ({ users }) => {
+const Sidebar = ({ users, isSidebarOpen }) => {
   const [uploadStatus, setUploadStatus] = useState('');
   const [isUploadExpanded, setIsUploadExpanded] = useState(false);
   const { language } = useLanguage();
@@ -46,7 +46,11 @@ const Sidebar = ({ users }) => {
   };
 
   return (
-    <div className="w-80 bg-white/95 backdrop-blur-sm border-r border-gray-200/50 flex flex-col shadow-lg">
+    <div
+      className={`fixed top-0 left-0 h-full bg-white/95 backdrop-blur-sm border-r border-gray-200/50 flex flex-col shadow-lg transition-transform duration-300 ease-in-out z-40 md:relative md:translate-x-0 ${
+        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      } w-80`}
+    >
       {/* Enhanced Online Users Section */}
       <div className="p-6 border-b border-gray-200/50">
         <div className="flex items-center space-x-3 mb-4">

@@ -29,6 +29,7 @@ const PORT = process.env.PORT || 8080;
 
 // --- In-memory data storage (for demonstration) ---
 const users = new Map(); // Stores { ws -> { username, language } }
+const activeConnections = new Map(); // Track active WebSocket connections
 
 // --- Enhanced multi-language knowledge base ---
 const customKnowledge = {
@@ -502,8 +503,18 @@ app.post('/api/users/:username/change-password', (req, res) => {
 });
 
 // --- WebSocket Server Logic ---
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, req) => {
     console.log('New WebSocket connection established');
+    
+    // Add connection tracking
+    const connectionId = Date.now() + Math.random();
+    activeConnections.set(connectionId, ws);
+    
+    // Set up ping/pong for keepalive
+    ws.isAlive = true;
+    ws.on('pong', () => {
+        ws.isAlive = true;
+    });
     
     ws.on('message', async (message) => {
         try {
@@ -512,7 +523,12 @@ wss.on('connection', (ws) => {
             
             switch (data.type) {
                 case 'join':
-                    users.set(ws, { username: data.username, language: data.language || 'en' });
+                    // Store user with connection tracking
+                    users.set(ws, { 
+                        username: data.username, 
+                        language: data.language || 'en',
+                        connectionId: connectionId
+                    });
                     broadcastUserList();
                     console.log(`${data.username} joined with language: ${data.language || 'en'}`);
                     
@@ -577,18 +593,47 @@ wss.on('connection', (ws) => {
                         setTimeout(() => handleBotResponse(data, ws), 1000);
                     }
                     break;
+                    
+                case 'ping':
+                    // Respond to ping
+                    ws.send(JSON.stringify({ type: 'pong' }));
+                    break;
             }
         } catch (e) {
             console.error('Error parsing message:', e);
         }
     });
 
-    ws.on('close', () => {
+    ws.on('close', (code, reason) => {
+        console.log(`WebSocket closed: ${code} - ${reason}`);
         users.delete(ws);
+        activeConnections.delete(connectionId);
         broadcastUserList();
     });
     
-    ws.on('error', (e) => console.error('WebSocket error:', e));
+    ws.on('error', (e) => {
+        console.error('WebSocket error:', e);
+        users.delete(ws);
+        activeConnections.delete(connectionId);
+    });
+});
+
+// Add keepalive ping/pong mechanism
+const pingInterval = setInterval(() => {
+    wss.clients.forEach((ws) => {
+        if (ws.isAlive === false) {
+            console.log('Terminating inactive connection');
+            return ws.terminate();
+        }
+        
+        ws.isAlive = false;
+        ws.ping();
+    });
+}, 30000); // Ping every 30 seconds
+
+// Clean up interval when server shuts down
+process.on('SIGTERM', () => {
+    clearInterval(pingInterval);
 });
 
 // --- Helper Functions ---

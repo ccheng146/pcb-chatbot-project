@@ -2,10 +2,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { translate } from '../utils/translations';
-import { useNavigate } from 'react-router-dom';
-
-// Define API base URL - ideally this would be in an environment variable
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 const LoginScreen = ({ onLogin }) => {
   const [name, setName] = useState('');
@@ -13,9 +9,11 @@ const LoginScreen = ({ onLogin }) => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [networkStatus, setNetworkStatus] = useState(''); // Track network status
+  const [networkStatus, setNetworkStatus] = useState('');
   const { language, setLanguage } = useLanguage();
-  const navigate = useNavigate();
+
+  // Define API_BASE_URL using environment variable or fallback
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
   // Check network connectivity
   const checkApiConnection = async () => {
@@ -138,21 +136,21 @@ const LoginScreen = ({ onLogin }) => {
     setLanguage(e.target.value);
   };
 
-  // Add debugging for admin button
+  // Replace goToAdmin function with a simple link
   const goToAdmin = () => {
-    console.log('Navigating to admin page');
-    navigate('/admin');
+    window.location.href = '/admin';  // Simple navigation without useNavigate
   };
   
   return (
-    <div className="h-screen bg-gradient-to-br from-indigo-900 via-blue-900 to-purple-900 flex items-center justify-center p-4 relative">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
       {/* Background decorative elements */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-20 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
         <div className="absolute top-40 right-20 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-2000"></div>
         <div className="absolute -bottom-8 left-40 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-4000"></div>
       </div>
-
+      
+      {/* Main login form */}
       <div className="relative z-10 bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 w-full max-w-md border border-white/20">
         {/* Header with logo/icon */}
         <div className="text-center mb-8">

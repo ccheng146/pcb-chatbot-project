@@ -3,40 +3,48 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
-// If you create a global CSS file, import it here
 import './index.css' 
 
-// Calculate the viewport height for mobile browsers - improved version
+// Enhanced mobile viewport height calculation
 function setAppHeight() {
   const doc = document.documentElement;
   const windowHeight = window.innerHeight;
   
-  // Fix for iOS Safari - use more reliable approaches
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  
-  if (isIOS) {
-    // On iOS, we need to handle the viewport differently
-    const safeAreaBottom = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--sat"), 10) || 0;
-    const height = `${windowHeight - safeAreaBottom}px`;
-    doc.style.setProperty('--app-height', height);
+  // Use the most reliable viewport height
+  if (window.visualViewport) {
+    // Modern approach with Visual Viewport API
+    const height = window.visualViewport.height;
+    doc.style.setProperty('--app-height', `${height}px`);
   } else {
-    // For other browsers
+    // Fallback for older browsers
     doc.style.setProperty('--app-height', `${windowHeight}px`);
   }
+  
+  // Also set CSS custom property for dynamic viewport
+  doc.style.setProperty('--vh', `${windowHeight * 0.01}px`);
 }
 
 // Set initial height
 setAppHeight();
 
-// Update on resize and orientation change
-window.addEventListener('resize', setAppHeight);
-window.addEventListener('orientationchange', () => {
-  // Small delay to ensure the orientation has fully changed
-  setTimeout(setAppHeight, 100);
+// Listen for viewport changes (keyboard, orientation, etc.)
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', setAppHeight);
+} else {
+  window.addEventListener('resize', setAppHeight);
+  window.addEventListener('orientationchange', () => {
+    setTimeout(setAppHeight, 100);
+  });
+}
+
+// Handle iOS keyboard events
+window.addEventListener('focusin', () => {
+  setTimeout(setAppHeight, 300);
 });
 
-// Also update on page load to ensure accurate calculations
-window.addEventListener('load', setAppHeight);
+window.addEventListener('focusout', () => {
+  setTimeout(setAppHeight, 300);
+});
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

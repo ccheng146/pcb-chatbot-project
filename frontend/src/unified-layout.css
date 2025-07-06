@@ -1,94 +1,51 @@
-/* Specific styling for the unified layout */
+/* /frontend/src/unified-layout.css */
 
-/* Tab navigation height */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .tab-nav {
-  height: 48px;
-  min-height: 48px;
-  flex-shrink: 0;
-  overflow-x: auto; /* Allow scrolling on small devices */
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-  white-space: nowrap; /* Prevent tab wrapping */
-  display: flex;
+  flex-wrap: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  min-height: 3rem;
 }
 
-/* Content area specific styling */
 .tab-content {
-  height: calc(100vh - 48px);
-  max-height: calc(100vh - 48px);
+  height: calc(100vh - 3rem);
+  height: calc(100dvh - 3rem);
   overflow: hidden;
 }
 
-/* Adjustments for ChatWindow component */
-.chat-window-container {
-  height: 100%;
-  max-height: 100%;
-  overflow: hidden;
+/* iOS Safari specific */
+@supports (-webkit-touch-callout: none) {
+  .tab-content {
+    height: calc(-webkit-fill-available - 3rem);
+  }
 }
 
-/* Adjustments for LoginScreen component */
-.login-screen-container {
-  height: 100%;
-  max-height: 100%;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Adjustments for AdminPage component */
-.admin-page-container {
-  height: 100%;
-  max-height: 100%;
-  overflow: hidden;
-}
-
-/* Unified layout specific styling */
-
-/* Ensure all height calculations work properly */
-.chat-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Fix for content trimming at top */
-.unified-tab-content {
-  height: calc(100vh - 48px);
-  padding-top: 1px; /* Small padding to prevent content trimming */
-}
-
-/* Ensure chat area gets proper height */
-.tab-chat {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-/* Make internal scrolling work for chat messages */
-.messages-container {
-  flex: 1;
-  overflow-y: auto;
-  padding-top: 2px; /* Prevent top content trimming */
-}
-
-/* Responsive design for different screen sizes */
 @media (max-width: 768px) {
-  .tab-nav button {
-    padding-left: 3vw !important;
-    padding-right: 3vw !important;
-    font-size: 0.85rem !important;
+  .tab-nav {
+    justify-content: space-around;
+    padding: 0.5rem 0;
+  }
+
+  .tab-content {
+    height: calc(100vh - 3.5rem);
+    height: calc(100dvh - 3.5rem);
   }
   
-  /* Adjust content area on mobile */
-  .tab-content {
-    height: calc(100vh - 48px - env(safe-area-inset-bottom, 0px));
-    max-height: calc(100vh - 48px - env(safe-area-inset-bottom, 0px));
+  @supports (-webkit-touch-callout: none) {
+    .tab-content {
+      height: calc(-webkit-fill-available - 3.5rem);
+    }
   }
-}
 
-/* Account for notch on iPhone X and newer models */
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .chat-input, .login-form-container {
-    padding-bottom: env(safe-area-inset-bottom, 0);
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
   }
 }
