@@ -4,22 +4,32 @@ import { WebSocketServer } from 'ws';
 import multer from 'multer';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
-import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
+import cors from 'cors'; // Add this missing import
 
 // Load environment variables from .env file
 dotenv.config();
 
 const app = express();
-// Enable CORS for all routes, useful for development and some deployment scenarios
-app.use(cors({
-  origin: '*', // In production, restrict this to your frontend domain
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+
+// CORS configuration
+const corsOptions = {
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://pcb-chatbot-project-git-main-dennis-projects-7001cabf.vercel.app',
+    // Add your actual Vercel domain here
+    'https://pcb-chatbot-project.vercel.app'
+  ],
   credentials: true,
-  optionsSuccessStatus: 200
-}));
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+
+// Remove the duplicate CORS configuration - keep only the one above
 app.use(express.json()); // Add express JSON middleware for parsing request bodies
 
 const server = http.createServer(app);
