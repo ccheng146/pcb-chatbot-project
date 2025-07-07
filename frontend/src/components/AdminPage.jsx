@@ -34,6 +34,9 @@ class ErrorBoundary extends React.Component {
 }
 
 const AdminPage = () => {
+  // Add API base URL
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+  
   const navigate = useNavigate();
 
   // State declarations
@@ -100,7 +103,7 @@ const AdminPage = () => {
     setLoginError('');
     
     try {
-      const response = await fetch('http://localhost:8080/api/admin/login', {
+      const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -124,7 +127,7 @@ const AdminPage = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8080/api/users');
+      const response = await fetch(`${API_BASE_URL}/api/users`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch users');
@@ -147,7 +150,7 @@ const AdminPage = () => {
 
   const handleDeleteUser = async (username) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/users/${username}`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${username}`, {
         method: 'DELETE'
       });
       
@@ -173,7 +176,7 @@ const AdminPage = () => {
     }
     
     try {
-      const response = await fetch('http://localhost:8080/api/auth/register', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -218,7 +221,7 @@ const AdminPage = () => {
     }
     
     try {
-      const response = await fetch(`http://localhost:8080/api/users/${selectedUser.username}/change-password`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${selectedUser.username}/change-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -273,7 +276,7 @@ const AdminPage = () => {
     }
     
     try {
-      const response = await fetch('http://localhost:8080/api/admin/change-password', {
+      const response = await fetch(`${API_BASE_URL}/api/admin/change-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

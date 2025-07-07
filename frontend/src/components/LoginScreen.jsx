@@ -1,5 +1,6 @@
 /* FILE: /frontend/src/components/LoginScreen.jsx */
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { translate } from '../utils/translations';
 
@@ -11,6 +12,7 @@ const LoginScreen = ({ onLogin }) => {
   const [loading, setLoading] = useState(false);
   const [networkStatus, setNetworkStatus] = useState('');
   const { language, setLanguage } = useLanguage();
+  const navigate = useNavigate();
 
   // Define API_BASE_URL using environment variable or fallback
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
@@ -136,9 +138,9 @@ const LoginScreen = ({ onLogin }) => {
     setLanguage(e.target.value);
   };
 
-  // Replace goToAdmin function with a simple link
+  // Fix the admin navigation
   const goToAdmin = () => {
-    window.location.href = '/admin';  // Simple navigation without useNavigate
+    navigate('/admin');
   };
   
   return (
